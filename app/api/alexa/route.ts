@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SkillBuilders } from 'ask-sdk-core';
-import { SELECTED_VOICES, SYSTEM_PROMPT, SUMMARY_PROMPT, EXIT_LINES, REPROMPT_LINES } from './constants';
+import { SELECTED_VOICES, SYSTEM_PROMPT, SUMMARY_PROMPT, EXIT_LINES, REPROMPT_LINES, LAUNCH_GREETINGS } from './constants';
 import { generateContent } from '@/lib/gemini';
 import { getOrCreateUser, createMemory, getAllSummaries, getMessages, createMessage } from '@/lib/db';
 
@@ -33,6 +33,10 @@ function getRandomReprompt(): string {
   return REPROMPT_LINES[Math.floor(Math.random() * REPROMPT_LINES.length)];
 }
 
+function getRandomLaunchGreeting(): string {
+  return LAUNCH_GREETINGS[Math.floor(Math.random() * LAUNCH_GREETINGS.length)];
+}
+
 function cleanSSML(text: string): string {
   // Remove markdown code blocks and extra wrapper tags
   let cleaned = text
@@ -52,7 +56,7 @@ const LaunchRequestHandler = {
   },
   handle(handlerInput: any) {
     return handlerInput.responseBuilder
-      .speak('Hello love.')
+      .speak(getRandomLaunchGreeting())
       .reprompt(getRandomReprompt())
       .getResponse();
   }
