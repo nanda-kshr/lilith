@@ -7,7 +7,7 @@ const LaunchRequestHandler = {
   },
   handle(handlerInput: any) {
     return handlerInput.responseBuilder
-      .speak('Hello World')
+      .speak('Hello love')
       .getResponse();
   }
 };
@@ -20,8 +20,50 @@ const LilithSpeakHandler = {
   handle(handlerInput: any) {
     const slots = handlerInput.requestEnvelope.request.intent.slots;
     const speakValue = slots?.speak?.value || slots?.greetings?.value || 'I didn\'t catch that.';
+    
+    console.log('LilithSpeak triggered with slots:', slots);
+    
     return handlerInput.responseBuilder
       .speak(speakValue)
+      .getResponse();
+  }
+};
+
+const HelpIntentHandler = {
+  canHandle(handlerInput: any) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.HelpIntent';
+  },
+  handle(handlerInput: any) {
+    return handlerInput.responseBuilder
+      .speak('You can ask me to say anything. For example, say lilith hello.')
+      .reprompt('What would you like me to say?')
+      .getResponse();
+  }
+};
+
+const CancelAndStopIntentHandler = {
+  canHandle(handlerInput: any) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && (handlerInput.requestEnvelope.request.intent.name === 'AMAZON.CancelIntent'
+        || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent');
+  },
+  handle(handlerInput: any) {
+    return handlerInput.responseBuilder
+      .speak('Goodbye!')
+      .getResponse();
+  }
+};
+
+const FallbackIntentHandler = {
+  canHandle(handlerInput: any) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.FallbackIntent';
+  },
+  handle(handlerInput: any) {
+    return handlerInput.responseBuilder
+      .speak('Sorry, I don\'t understand that. You can ask me to say something by saying lilith followed by what you want me to say.')
+      .reprompt('What would you like me to say?')
       .getResponse();
   }
 };
@@ -42,7 +84,14 @@ const DebugIntentHandler = {
 };
 
 const skill = SkillBuilders.custom()
-  .addRequestHandlers(LaunchRequestHandler, LilithSpeakHandler, DebugIntentHandler)
+  .addRequestHandlers(
+    LaunchRequestHandler,
+    LilithSpeakHandler,
+    HelpIntentHandler,
+    CancelAndStopIntentHandler,
+    FallbackIntentHandler,
+    DebugIntentHandler
+  )
   .create();
 
 export async function POST(request: NextRequest) {
