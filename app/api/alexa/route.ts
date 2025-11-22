@@ -12,8 +12,21 @@ const LaunchRequestHandler = {
   }
 };
 
+const LilithSpeakHandler = {
+  canHandle(handlerInput: any) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'LilithSpeak';
+  },
+  handle(handlerInput: any) {
+    const speakValue = handlerInput.requestEnvelope.request.intent.slots?.speak?.value || 'I didn\'t catch that.';
+    return handlerInput.responseBuilder
+      .speak(speakValue)
+      .getResponse();
+  }
+};
+
 const skill = SkillBuilders.custom()
-  .addRequestHandlers(LaunchRequestHandler)
+  .addRequestHandlers(LaunchRequestHandler, LilithSpeakHandler)
   .create();
 
 export async function POST(request: NextRequest) {
