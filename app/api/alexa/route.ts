@@ -60,20 +60,37 @@ const LaunchRequestHandler = {
 
 const LilithSpeakHandler = {
   canHandle(handlerInput: any) {
-    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-      && handlerInput.requestEnvelope.request.intent.name === 'LilithSpeak';
+    const request = handlerInput.requestEnvelope.request;
+    if (request.type !== 'IntentRequest') return false;
+    
+    // Handle multiple conversation intents
+    const conversationIntents = [
+      'LilithSpeak',
+      'GreetingIntent',
+      'CasualTalkIntent',
+      'AffectionIntent'
+    ];
+    
+    return conversationIntents.includes(request.intent.name);
   },
   async handle(handlerInput: any) {
-    const slots = handlerInput.requestEnvelope.request.intent.slots;
-    const userInput = slots?.speak?.value;
+    const request = handlerInput.requestEnvelope.request;
+    const slots = request.intent.slots;
     
-    // Get user and session info
+    // Extract user input from different slot types
+    const slotValue = slots?.speak?.value || 
+                      slots?.query?.value || 
+                      slots?.message?.value;
+
+    const rawUtterance = request.intent?.rawUtterance || '';
+    let userInput = rawUtterance || slotValue || request.intent.name;
+
+    console.log('User:', userInput);
     const userId = handlerInput.requestEnvelope.session.user.userId;
     const sessionId = handlerInput.requestEnvelope.session.sessionId;
     
     await getOrCreateUser(userId);
     
-    console.log('LilithSpeak triggered with:', userInput);
   
     const summaries = await getAllSummaries(userId);
     const messages = await getMessages(sessionId, userId);
@@ -98,7 +115,7 @@ Generate Lilith's response:`;
 
     const geminiResponse = await generateContent(prompt);
     
-    await createMessage(sessionId, userId, userInput, 'me');
+    await createMessage(sessionId, userId, userInput || '', 'me');
     await createMessage(sessionId, userId, geminiResponse || '', 'lilith');
     
     const cleanedResponse = cleanSSML(geminiResponse || '');
