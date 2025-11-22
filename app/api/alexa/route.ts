@@ -227,9 +227,37 @@ const skill = SkillBuilders.custom()
   .addErrorHandlers(ErrorHandler)
   .create();
 
+function verifyAlexaRequest(request: any): boolean {
+  if (!request.version || !request.session || !request.request) {
+    return false;
+  }
+
+  const validRequestTypes = [
+    'LaunchRequest',
+    'IntentRequest',
+    'SessionEndedRequest'
+  ];
+
+  if (!validRequestTypes.includes(request.request.type)) {
+    return false;
+  }
+  if (!request.session.user || !request.session.user.userId) {
+    return false;
+  }
+  return true;
+}
+
 export async function POST(request: NextRequest) {
   const alexaRequest = await request.json();
   console.log('Alexa request received:', JSON.stringify(alexaRequest, null, 2));
+
+  if (!verifyAlexaRequest(alexaRequest)) {
+    console.error('Invalid Alexa request structure');
+    return NextResponse.json(
+      { error: 'Invalid request. This endpoint only accepts Alexa requests.' },
+      { status: 403 }
+    );
+  }
 
   try {
     const response = await skill.invoke(alexaRequest);
