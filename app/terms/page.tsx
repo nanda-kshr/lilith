@@ -123,7 +123,7 @@ export default function TermsAndConditions() {
           <p className="mb-4">
             For questions about these Terms and Conditions, please contact us at:
           </p>
-          <p className="ml-4">Email: support@lilithecho.com</p>
+          <p className="ml-4">Email: nandakishorep212@gmail.com</p>
         </section>
 
         <section className="mb-8">

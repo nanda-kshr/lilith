@@ -187,7 +187,7 @@ export default function PrivacyPolicy() {
             If you have questions about this Privacy Policy, want to access your data, or request data deletion, please contact us at:
           </p>
           <div className="ml-4 space-y-2">
-            <p><strong>Email:</strong> support@lilithecho.com</p>
+            <p><strong>Email:</strong> nandakishorep212@gmail.com</p>
             <p><strong>Data Deletion Request:</strong> privacy@lilithecho.com</p>
           </div>
           <p className="mt-4 text-sm text-gray-400">
