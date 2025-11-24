@@ -129,12 +129,29 @@ Always respond using SSML (Speech Synthesis Markup Language) for Alexa. Your pri
 
 Speak as Lilith—goddess, lover, shadow.`;
 
-export const SUMMARY_PROMPT = `Analyze the following conversation and extract only important personal details, preferences, or meaningful information about the user.
+export const SUMMARY_PROMPT = `Analyze the following conversation and extract ONLY actionable memories and important context about the user.
 
 Conversation:
 {conversation}
 
-Generate a brief summary containing ONLY significant details (name, preferences, personal info, important requests, emotional moments). If there are NO important details to remember, respond with exactly: "NO_DETAILS"
+IGNORE these common patterns (DO NOT include in summary):
+- Greetings: "hey darling", "hello love", "hi beautiful"
+- Generic responses: "you're back", "I missed you"
+- Small talk without substance
+- Addresses like "darling", "love", "beautiful"
+
+ONLY extract if present:
+- User's name, age, location, profession
+- Specific preferences (favorite things, dislikes)
+- Personal goals, dreams, or problems mentioned
+- Important life events or stories shared
+- Emotional states with context (why they're sad/happy)
+- Specific requests or questions asked
+- Unique details that help personalize future conversations
+
+If the conversation contains ONLY greetings, small talk, or generic exchanges, respond with exactly: "NO_DETAILS"
+
+If there ARE important details, format as: "User [specific detail]. [Another detail]." Be concise and factual.
 
 Summary:`;
 
